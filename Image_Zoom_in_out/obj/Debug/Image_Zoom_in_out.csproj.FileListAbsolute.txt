@@ -1,0 +1,9 @@
+c:\users\adimin\documents\visual studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\Image_Zoom_in_out.exe.config
+C:\Users\adimin\documents\visual studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\Image_Zoom_in_out.exe
+C:\Users\adimin\documents\visual studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\Image_Zoom_in_out.pdb
+C:\Users\adimin\documents\visual studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Zoom_in_out.csprojResolveAssemblyReference.cache
+C:\Users\adimin\documents\visual studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Zoom_in_out.Form1.resources
+C:\Users\adimin\documents\visual studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Zoom_in_out.Properties.Resources.resources
+C:\Users\adimin\documents\visual studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Zoom_in_out.csproj.GenerateResource.Cache
+C:\Users\adimin\documents\visual studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Zoom_in_out.exe
+C:\Users\adimin\documents\visual studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Zoom_in_out.pdb
