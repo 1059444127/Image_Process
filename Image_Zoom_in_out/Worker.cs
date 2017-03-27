@@ -387,6 +387,11 @@ namespace Image_Zoom_in_out
                         var newColorG = bit_array_G[k] == '0' ? 0 : 255;
                         var newColorB = bit_array_B[k] == '0' ? 0 : 255;
 
+                        // 灰階版本壓縮率疑似更好
+                        //var newColorR = bit_array_R[k] == '0' ? 0 : (int)Char.GetNumericValue(bit_array_R[k]) * (int)Math.Pow(2, 7 - k);
+                        //var newColorG = bit_array_G[k] == '0' ? 0 : (int)Char.GetNumericValue(bit_array_G[k]) * (int)Math.Pow(2, 7 - k);
+                        //var newColorB = bit_array_B[k] == '0' ? 0 : (int)Char.GetNumericValue(bit_array_B[k]) * (int)Math.Pow(2, 7 - k);
+
 
 
                         if (form1.FULL_COLOR)
