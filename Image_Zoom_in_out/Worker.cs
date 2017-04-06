@@ -186,7 +186,7 @@ namespace Image_Zoom_in_out
             switch (form1.ZO_CODE)
             {
                 case "ZOOM_IN":
-                    newImage = new Bitmap((oldImage.Width * form1.MUTIPLE - 1), (oldImage.Height * form1.MUTIPLE - 1));
+                    newImage = new Bitmap((oldImage.Width * form1.MUTIPLE), (oldImage.Height * form1.MUTIPLE));
                     for (int i = 1; i < oldImage.Width - 1; i++)
                     {
                         for (int j = 1; j < oldImage.Height - 1; j++)
@@ -217,7 +217,7 @@ namespace Image_Zoom_in_out
                     }
                     return newImage;
                 case "ZOOM_OUT":
-                    newImage = new Bitmap((oldImage.Width / form1.MUTIPLE) - 1, (oldImage.Height / form1.MUTIPLE) - 1);
+                    newImage = new Bitmap((oldImage.Width / form1.MUTIPLE), (oldImage.Height / form1.MUTIPLE));
                     for (int i = 1; i < oldImage.Width / form1.MUTIPLE - 1; i++)
                     {
                         for (int j = 1; j < oldImage.Height / form1.MUTIPLE - 1; j++)
