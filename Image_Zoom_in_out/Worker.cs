@@ -105,6 +105,11 @@ namespace Image_Zoom_in_out
                     newImage = MedianFilter(oldImage);
                     form1.BITMAP = newImage;
                     break;
+                case "Laplacian":
+                    newImage = Laplacian(oldImage);
+                    form1.BITMAP = newImage;
+                    break;
+                    
 
 
             }
@@ -608,7 +613,6 @@ namespace Image_Zoom_in_out
 
         /**
          * Median filter
-         * 
          */
         private Bitmap MedianFilter(Bitmap oldImage)
         {
@@ -685,6 +689,63 @@ namespace Image_Zoom_in_out
             }
 
             return newBitmap;
+        }
+
+        /**
+         * Laplacian
+         */
+        private Bitmap Laplacian(Bitmap oldImage,int[] maskArray = null)
+        {
+            /*
+             * 預設矩陣內容
+             */
+            if (maskArray == null) maskArray = new int[9] {-1, -1, -1, -1, 9, -1, -1, -1, -1};
+
+            Bitmap newImage = new Bitmap(oldImage.Width, oldImage.Height);
+            Bitmap processImage = AddBorders(oldImage);
+            for (int i = 1; i < oldImage.Width + 1; i++)
+            {
+                for (int j = 1; j < oldImage.Height + 1; j++)
+                {
+                    /**
+                     * 取九宮格色塊
+                     */
+                    var p1_Color = processImage.GetPixel(i - 1, j - 1);
+                    var p2_Color = processImage.GetPixel(i - 1, j);
+                    var p3_Color = processImage.GetPixel(i - 1, j + 1);
+                    var p4_Color = processImage.GetPixel(i, j - 1);
+                    var p5_Color = processImage.GetPixel(i, j);
+                    var p6_Color = processImage.GetPixel(i, j + 1);
+                    var p7_Color = processImage.GetPixel(i + 1, j - 1);
+                    var p8_Color = processImage.GetPixel(i + 1, j);
+                    var p9_Color = processImage.GetPixel(i + 1, j + 1);
+                    /**
+                     * 存成陣列紅'綠'藍'灰
+                     */
+                    int p_Color_R = p1_Color.R * maskArray[0] + p2_Color.R * maskArray[1] + p3_Color.R * maskArray[2] + p4_Color.R * maskArray[3] + p5_Color.R * maskArray[4] + p6_Color.R * maskArray[5] + p7_Color.R * maskArray[6] + p8_Color.R * maskArray[7] + p9_Color.R * maskArray[8];
+                    int p_Color_G = p1_Color.G * maskArray[0] + p2_Color.G * maskArray[1] + p3_Color.G * maskArray[2] + p4_Color.G * maskArray[3] + p5_Color.G * maskArray[4] + p6_Color.G * maskArray[5] + p7_Color.G * maskArray[6] + p8_Color.G * maskArray[7] + p9_Color.G * maskArray[8];
+                    int p_Color_B = p1_Color.B * maskArray[0] + p2_Color.B * maskArray[1] + p3_Color.B * maskArray[2] + p4_Color.B * maskArray[3] + p5_Color.B * maskArray[4] + p6_Color.B * maskArray[5] + p7_Color.B * maskArray[6] + p8_Color.B * maskArray[7] + p9_Color.B * maskArray[8];
+                    int p_Color_Gray = (int)(p_Color_R * 0.299 + p_Color_G * 0.587 + p_Color_B * 0.114);
+                    /*
+                     * 將小於0或大於255的數字轉成0或255
+                     * 像素介於0<-->255
+                     */
+                    p_Color_R = p_Color_R < 0 ? 0 : p_Color_R > 255 ? 255 : p_Color_R;
+                    p_Color_G = p_Color_G < 0 ? 0 : p_Color_G > 255 ? 255 : p_Color_G;
+                    p_Color_B = p_Color_B < 0 ? 0 : p_Color_B > 255 ? 255 : p_Color_B;
+                    p_Color_Gray = p_Color_Gray < 0 ? 0 : p_Color_Gray > 255 ? 255 : p_Color_Gray;
+
+                    /**
+                     * 判斷顯示模式為全彩或是灰階
+                     */
+                    newImage.SetPixel(i - 1, j - 1,
+                        form1.FULL_COLOR
+                            ? Color.FromArgb(p_Color_R, p_Color_G , p_Color_B )
+                            : Color.FromArgb(p_Color_Gray , p_Color_Gray , p_Color_Gray ));
+                }
+            }
+
+            return newImage;
         }
 
 

@@ -139,7 +139,7 @@ namespace Image_Zoom_in_out
                 {
                     mExcuteMode = listBox1.Text;
 
-                    if ((textBox1.Enabled && int.TryParse(textBox1.Text, out mMutiple) && mMutiple > 0) || (textBox2.Enabled && double.TryParse(textBox2.Text, out mGamma) && mGamma > 0) || (listBox1.SelectedIndex == 4 || listBox1.SelectedIndex == 3 || listBox1.SelectedIndex == 6 || listBox1.SelectedIndex == 7 || listBox1.SelectedIndex == 8 || listBox1.SelectedIndex == 9))
+                    if ((textBox1.Enabled && int.TryParse(textBox1.Text, out mMutiple) && mMutiple > 0) || (textBox2.Enabled && double.TryParse(textBox2.Text, out mGamma) && mGamma > 0) || (listBox1.SelectedIndex != 0 || listBox1.SelectedIndex != 1 || listBox1.SelectedIndex != 2 || listBox1.SelectedIndex != 5))
                     {
 
 
@@ -281,6 +281,7 @@ namespace Image_Zoom_in_out
                 7.      Histogram Processing
                 8.      Averaging filter
                 9.      Median filter
+               10.      Laplacian
              */
             switch (index)
             {
@@ -392,6 +393,17 @@ namespace Image_Zoom_in_out
 
                     break;
                 case 9:
+                    groupBox1.Enabled = false;
+                    textBox1.Enabled = false;
+                    textBox2.Enabled = false;
+                    NewPictureBoxBox.Visible = true;
+                    FullColorChkBox.Enabled = true;
+                    SubPicBoxVisible(false);
+                    textBox1.Text = "1";
+                    textBox2.Text = "1.0";
+                    mZO_Code = "NONE";
+                    break;
+                case 10:
                     groupBox1.Enabled = false;
                     textBox1.Enabled = false;
                     textBox2.Enabled = false;
