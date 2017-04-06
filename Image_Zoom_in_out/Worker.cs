@@ -133,11 +133,11 @@ namespace Image_Zoom_in_out
             Bitmap newImage;
             switch (form1.ZO_CODE)
             {
-                case "ZOOM":
-                    newImage = new Bitmap((oldImage.Width * form1.MUTIPLE - 1), (oldImage.Height * form1.MUTIPLE - 1));
-                    for (int i = 0; i < oldImage.Width - 1; i++)
+                case "ZOOM_IN":
+                    newImage = new Bitmap((oldImage.Width * form1.MUTIPLE), (oldImage.Height * form1.MUTIPLE));
+                    for (int i = 0; i < oldImage.Width; i++)
                     {
-                        for (int j = 0; j < oldImage.Height - 1; j++)
+                        for (int j = 0; j < oldImage.Height; j++)
                         {
                             Color p_color = oldImage.GetPixel(i, j);
                             newImage.SetPixel(i * form1.MUTIPLE, j * form1.MUTIPLE, p_color);
@@ -157,11 +157,11 @@ namespace Image_Zoom_in_out
                         }
                     }
                     return newImage;
-                case "OUT":
-                    newImage = new Bitmap((oldImage.Width / form1.MUTIPLE - 1), (oldImage.Height / form1.MUTIPLE - 1));
-                    for (int i = 0; i < oldImage.Width / form1.MUTIPLE - 1; i++)
+                case "ZOOM_OUT":
+                    newImage = new Bitmap((oldImage.Width / form1.MUTIPLE), (oldImage.Height / form1.MUTIPLE));
+                    for (int i = 0; i < oldImage.Width / form1.MUTIPLE; i++)
                     {
-                        for (int j = 0; j < oldImage.Height / form1.MUTIPLE - 1; j++)
+                        for (int j = 0; j < oldImage.Height / form1.MUTIPLE; j++)
                         {
                             Color p_color = oldImage.GetPixel(i * form1.MUTIPLE, j * form1.MUTIPLE);
                             newImage.SetPixel(i, j, p_color);
@@ -185,7 +185,7 @@ namespace Image_Zoom_in_out
             Bitmap newImage;
             switch (form1.ZO_CODE)
             {
-                case "ZOOM":
+                case "ZOOM_IN":
                     newImage = new Bitmap((oldImage.Width * form1.MUTIPLE - 1), (oldImage.Height * form1.MUTIPLE - 1));
                     for (int i = 1; i < oldImage.Width - 1; i++)
                     {
@@ -216,7 +216,7 @@ namespace Image_Zoom_in_out
                         }
                     }
                     return newImage;
-                case "OUT":
+                case "ZOOM_OUT":
                     newImage = new Bitmap((oldImage.Width / form1.MUTIPLE) - 1, (oldImage.Height / form1.MUTIPLE) - 1);
                     for (int i = 1; i < oldImage.Width / form1.MUTIPLE - 1; i++)
                     {

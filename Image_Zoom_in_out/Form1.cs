@@ -139,21 +139,22 @@ namespace Image_Zoom_in_out
                 {
                     mExcuteMode = listBox1.Text;
 
-                    if ((textBox1.Enabled && int.TryParse(textBox1.Text, out mMutiple) && mMutiple > 0) || (textBox2.Enabled && double.TryParse(textBox2.Text, out mGamma) && mGamma > 0) || (listBox1.SelectedIndex != 0 || listBox1.SelectedIndex != 1 || listBox1.SelectedIndex != 2 || listBox1.SelectedIndex != 5))
+                    if ((textBox1.Enabled && int.TryParse(textBox1.Text, out mMutiple) && mMutiple > 0) || (textBox2.Enabled && double.TryParse(textBox2.Text, out mGamma) && mGamma > 0) || (listBox1.SelectedIndex != 0 & listBox1.SelectedIndex != 1 & listBox1.SelectedIndex != 2 & listBox1.SelectedIndex != 5))
                     {
 
 
                         if (radioButton1.Checked)
                         {
-                            mZO_Code = "ZOOM";
+                            mZO_Code = "ZOOM_IN";
                         }
                         else if (radioButton2.Checked)
                         {
-                            mZO_Code = "OUT";
+                            mZO_Code = "ZOOM_OUT";
                         }
 
                         if (mZO_Code != "")
                         {
+                            NoticeLabel.Text = "";
                             mFrom = this;
                             mWorkerObject = new Worker(mFrom);
                             mWorkerThread = new Thread(mWorkerObject.DoWork);
