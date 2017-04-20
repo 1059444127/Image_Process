@@ -227,7 +227,8 @@ namespace Image_Zoom_in_out
             "Histogram Processing",
             "Averaging filter",
             "Median filter",
-            "Laplacian"});
+            "Laplacian",
+            "Fourier Transformation"});
             this.listBox1.Location = new System.Drawing.Point(14, 24);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(120, 88);

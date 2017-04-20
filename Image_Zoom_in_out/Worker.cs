@@ -5,6 +5,9 @@ using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using AForge;
+using AForge.Imaging;
+using AForge.Imaging.ComplexFilters;
 
 namespace Image_Zoom_in_out
 {
@@ -107,6 +110,10 @@ namespace Image_Zoom_in_out
                     break;
                 case "Laplacian":
                     newImage = Laplacian(oldImage);
+                    form1.BITMAP = newImage;
+                    break;
+                case "Fourier Transformation":
+                    newImage = FourierTransformation(oldImage);
                     form1.BITMAP = newImage;
                     break;
                     
@@ -749,6 +756,64 @@ namespace Image_Zoom_in_out
         }
 
 
+        /**
+         * Fourier transformation
+         * AForge.NET
+         */
+        private Bitmap FourierTransformation(Bitmap oldImage, String PassType = "HighPass")
+        {
+            
+            //// create complex image
+            //ComplexImage complexImage = ComplexImage.FromBitmap(oldImage);
+            //// do forward Fourier transformation
+            //complexImage.ForwardFourierTransform();
+            //// create filter
+            //FrequencyFilter filter = new FrequencyFilter(new IntRange(0, 100));
+            //// apply filter
+            //filter.Apply(complexImage);
+            //// do backward Fourier transformation
+            //complexImage.BackwardFourierTransform();
+            //// get complex image as bitmat
+            //Bitmap fourierImage = complexImage.ToBitmap();
+
+            //return fourierImage;
+
+            AForge.Imaging.ComplexImage cimage;
+            switch (PassType)
+            {
+                case "HighPass":
+
+                    //AForge.Imaging.Image.SetGrayscalePalette(AForge.Imaging.Image.Convert16bppTo8bpp(oldImage));
+                    if (AForge.Imaging.Image.IsGrayscale(oldImage))
+                    {
+                        // create complex image from bitmap
+                        cimage = ComplexImage.FromBitmap(oldImage);
+                        // perform forward Fourier transformation
+                        cimage.ForwardFourierTransform();
+                        // get frequency view
+                        Bitmap newBitmap = cimage.ToBitmap();
+
+                        return newBitmap;
+                    }
+                    return null;
+                case "LowPass":
+                    // create complex image
+                    ComplexImage complexImage = ComplexImage.FromBitmap(oldImage);
+                    // do forward Fourier transformation
+                    complexImage.ForwardFourierTransform();
+                    // create filter
+                    FrequencyFilter filter = new FrequencyFilter(new IntRange(0, 100));
+                    // apply filter
+                    filter.Apply(complexImage);
+                    // do backward Fourier transformation
+                    complexImage.BackwardFourierTransform();
+                    // get complex image as bitmat
+                    Bitmap fourierImage = complexImage.ToBitmap();
+
+                    return fourierImage;
+            }
+            return null;
+        }
 
     }
 

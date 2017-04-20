@@ -415,6 +415,17 @@ namespace Image_Zoom_in_out
                     textBox2.Text = "1.0";
                     mZO_Code = "NONE";
                     break;
+                case 11:
+                    groupBox1.Enabled = false;
+                    textBox1.Enabled = false;
+                    textBox2.Enabled = false;
+                    NewPictureBoxBox.Visible = true;
+                    FullColorChkBox.Enabled = true;
+                    SubPicBoxVisible(false);
+                    textBox1.Text = "1";
+                    textBox2.Text = "1.0";
+                    mZO_Code = "NONE";
+                    break;
                 default:
                     groupBox1.Enabled = false;
                     textBox1.Enabled = false;
