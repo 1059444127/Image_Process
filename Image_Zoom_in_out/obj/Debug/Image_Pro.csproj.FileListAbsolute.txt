@@ -1,0 +1,15 @@
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\Image_Zoom_in_out.exe.config
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Zoom_in_out.exe
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Zoom_in_out.pdb
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\Image_Zoom_in_out.exe
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\Image_Zoom_in_out.pdb
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\AForge.dll
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\AForge.Imaging.dll
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\AForge.Math.dll
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\AForge.xml
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\AForge.Imaging.xml
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\bin\Debug\AForge.Math.xml
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Zoom_in_out.Form1.resources
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Zoom_in_out.Properties.Resources.resources
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Pro.csproj.GenerateResource.Cache
+C:\Users\adimin\Documents\Visual Studio 2013\Projects\Image_Zoom_in_out\Image_Zoom_in_out\obj\Debug\Image_Pro.csprojResolveAssemblyReference.cache

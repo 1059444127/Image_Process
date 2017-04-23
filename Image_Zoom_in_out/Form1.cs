@@ -13,7 +13,8 @@ namespace Image_Zoom_in_out
         private Worker mWorkerObject;
         private Thread mWorkerThread;
 
-        private bool mRadioChecked;
+        private bool mZoom_in_out_RadioChecked;
+        private bool mFilter_RadioChecked;
         private bool mFull_Color;
 
         private string mPic_Path = "";
@@ -21,6 +22,7 @@ namespace Image_Zoom_in_out
         private string mZO_Code = "";
         private int mMutiple;
         private double mGamma;
+        private string mFilter_Code = "";
         public static Bitmap mBitmap;
         public Bitmap[] mPixelizationImageArray;
         public Bitmap[] mNoiseImageArray = new Bitmap[8];
@@ -152,7 +154,17 @@ namespace Image_Zoom_in_out
                             mZO_Code = "ZOOM_OUT";
                         }
 
-                        if (mZO_Code != "")
+                        if (radioButton3.Checked)
+                        {
+                            mFilter_Code = "HighPass";
+                        }
+                        else if (radioButton4.Checked)
+                        {
+                            mFilter_Code = "LowPass";
+                        }
+
+                        // 即使模式不提供放大縮小和高低通也要將狀態設定為isChecked
+                        if (mZoom_in_out_RadioChecked && mFilter_RadioChecked)
                         {
                             NoticeLabel.Text = "";
                             mFrom = this;
@@ -163,7 +175,7 @@ namespace Image_Zoom_in_out
                         }
                         else
                         {
-                            NoticeLabel.Text = "請先選擇放大或縮小";
+                            NoticeLabel.Text = "請先選擇目的或濾波器設定";
                         }
 
                     }
@@ -226,20 +238,7 @@ namespace Image_Zoom_in_out
 
         }
 
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-            mRadioChecked = true;
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-            mRadioChecked = true;
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            StatusLabel.Text = "待機狀態";
-        }
+        
 
         public Button InputImageButton { get { return button1; } }
         public Button ExcuteButton { get { return button2; } }
@@ -266,6 +265,7 @@ namespace Image_Zoom_in_out
         public Bitmap BITMAP { get { return mBitmap; } set { mBitmap = value; } }
         public String EXCUTEMODE { get { return mExcuteMode; } }
         public String ZO_CODE { get { return mZO_Code; } }
+        public String FILTER_CODE { get { return mFilter_Code; } }
         public int MUTIPLE { get { return mMutiple; } }
         public double GAMMA { get { return mGamma; } }
         public Boolean FULL_COLOR { get { return mFull_Color; }}
@@ -283,11 +283,15 @@ namespace Image_Zoom_in_out
                 8.      Averaging filter
                 9.      Median filter
                10.      Laplacian
+               11.      Fourier Transformation
              */
             switch (index)
             {
                 case 0 :
                     groupBox1.Enabled = true;
+                    groupBox2.Enabled = false;
+                    mZoom_in_out_RadioChecked = false;
+                    mFilter_RadioChecked = true;
                     textBox1.Enabled = true;
                     NewPictureBoxBox.Visible = true;
                     FullColorChkBox.Enabled = false;
@@ -298,6 +302,9 @@ namespace Image_Zoom_in_out
                     break;
                 case 1:
                     groupBox1.Enabled = true;
+                    groupBox2.Enabled = false;
+                    mZoom_in_out_RadioChecked = false;
+                    mFilter_RadioChecked = true;
                     textBox1.Enabled = true;
                     NewPictureBoxBox.Visible = true;
                     FullColorChkBox.Enabled = false;
@@ -307,6 +314,9 @@ namespace Image_Zoom_in_out
                     break;
                 case 2:
                     groupBox1.Enabled = true;
+                    groupBox2.Enabled = false;
+                    mZoom_in_out_RadioChecked = false;
+                    mFilter_RadioChecked = true;
                     textBox1.Enabled = true;
                     NewPictureBoxBox.Visible = true;
                     FullColorChkBox.Enabled = false;
@@ -314,30 +324,39 @@ namespace Image_Zoom_in_out
                     SubPicBoxVisible(false);
                     textBox1.Text = "";
                     break;
-                case 3:
-                    groupBox1.Enabled = false;
-                    textBox1.Enabled = false;
-                    textBox2.Enabled = false;
-                    NewPictureBoxBox.Visible = true;
-                    FullColorChkBox.Enabled = true;
-                    SubPicBoxVisible(false);
-                    textBox1.Text = "1";
-                    textBox1.Text = "1.0";
-                    mZO_Code = "NONE";
-                    break;
-                case 4:
-                    groupBox1.Enabled = false;
-                    textBox1.Enabled = false;
-                    textBox2.Enabled = false;
-                    NewPictureBoxBox.Visible = true;
-                    FullColorChkBox.Enabled = true;
-                    SubPicBoxVisible(false);
-                    textBox1.Text = "1";
-                    textBox2.Text = "1.0";
-                    mZO_Code = "NONE";
-                    break;
+                //case 3:
+                //    groupBox1.Enabled = false;
+                //    groupBox2.Enabled = false;
+                //    mZoom_in_out_RadioChecked = true;
+                //    mFilter_RadioChecked = true;
+                //    textBox1.Enabled = false;
+                //    textBox2.Enabled = false;
+                //    NewPictureBoxBox.Visible = true;
+                //    FullColorChkBox.Enabled = true;
+                //    SubPicBoxVisible(false);
+                //    textBox1.Text = "1";
+                //    textBox1.Text = "1.0";
+                //    mZO_Code = "NONE";
+                //    break;
+                //case 4:
+                //    groupBox1.Enabled = false;
+                //    groupBox2.Enabled = false;
+                //    mZoom_in_out_RadioChecked = true;
+                //    mFilter_RadioChecked = true;
+                //    textBox1.Enabled = false;
+                //    textBox2.Enabled = false;
+                //    NewPictureBoxBox.Visible = true;
+                //    FullColorChkBox.Enabled = true;
+                //    SubPicBoxVisible(false);
+                //    textBox1.Text = "1";
+                //    textBox2.Text = "1.0";
+                //    mZO_Code = "NONE";
+                //    break;
                 case 5:
                     groupBox1.Enabled = false;
+                    groupBox2.Enabled = false;
+                    mZoom_in_out_RadioChecked = true;
+                    mFilter_RadioChecked = true;
                     textBox1.Enabled = false;
                     textBox2.Enabled = true;
                     NewPictureBoxBox.Visible = true;
@@ -345,10 +364,13 @@ namespace Image_Zoom_in_out
                     SubPicBoxVisible(false);
                     textBox1.Text = "1";
                     textBox2.Text = "1.0";
-                    mZO_Code = "NONE";
+                    //mZO_Code = "NONE";
                     break;
                 case 6:
                     groupBox1.Enabled = false;
+                    groupBox2.Enabled = false;
+                    mZoom_in_out_RadioChecked = true;
+                    mFilter_RadioChecked = true;
                     textBox1.Enabled = false;
                     textBox2.Enabled = false;
                     NewPictureBoxBox.Visible = false;
@@ -356,21 +378,27 @@ namespace Image_Zoom_in_out
                     SubPicBoxVisible(true);
                     textBox1.Text = "1";
                     textBox2.Text = "1.0";
-                    mZO_Code = "NONE";
+                    //mZO_Code = "NONE";
                     break;
-                case 7:
-                    groupBox1.Enabled = false;
-                    textBox1.Enabled = false;
-                    textBox2.Enabled = false;
-                    NewPictureBoxBox.Visible = true;
-                    FullColorChkBox.Enabled = true;
-                    SubPicBoxVisible(false);
-                    textBox1.Text = "1";
-                    textBox1.Text = "1.0";
-                    mZO_Code = "NONE";
-                    break;
+                //case 7:
+                //    groupBox1.Enabled = false;
+                //    groupBox2.Enabled = false;
+                //    mZoom_in_out_RadioChecked = true;
+                //    mFilter_RadioChecked = true;
+                //    textBox1.Enabled = false;
+                //    textBox2.Enabled = false;
+                //    NewPictureBoxBox.Visible = true;
+                //    FullColorChkBox.Enabled = true;
+                //    SubPicBoxVisible(false);
+                //    textBox1.Text = "1";
+                //    textBox1.Text = "1.0";
+                //    mZO_Code = "NONE";
+                //    break;
                 case 8:
                     groupBox1.Enabled = false;
+                    groupBox2.Enabled = false;
+                    mZoom_in_out_RadioChecked = true;
+                    mFilter_RadioChecked = true;
                     textBox1.Enabled = false;
                     textBox2.Enabled = false;
                     NewPictureBoxBox.Visible = false;
@@ -378,7 +406,7 @@ namespace Image_Zoom_in_out
                     SubPicBoxVisible(false);
                     textBox1.Text = "1";
                     textBox1.Text = "1.0";
-                    mZO_Code = "NONE";
+                    //mZO_Code = "NONE";
 
                     if (BITMAP != null)
                     {
@@ -393,30 +421,39 @@ namespace Image_Zoom_in_out
                     }
 
                     break;
-                case 9:
-                    groupBox1.Enabled = false;
-                    textBox1.Enabled = false;
-                    textBox2.Enabled = false;
-                    NewPictureBoxBox.Visible = true;
-                    FullColorChkBox.Enabled = true;
-                    SubPicBoxVisible(false);
-                    textBox1.Text = "1";
-                    textBox2.Text = "1.0";
-                    mZO_Code = "NONE";
-                    break;
-                case 10:
-                    groupBox1.Enabled = false;
-                    textBox1.Enabled = false;
-                    textBox2.Enabled = false;
-                    NewPictureBoxBox.Visible = true;
-                    FullColorChkBox.Enabled = true;
-                    SubPicBoxVisible(false);
-                    textBox1.Text = "1";
-                    textBox2.Text = "1.0";
-                    mZO_Code = "NONE";
-                    break;
+                //case 9:
+                //    groupBox1.Enabled = false;
+                //    groupBox2.Enabled = false;
+                //    mZoom_in_out_RadioChecked = true;
+                //    mFilter_RadioChecked = true;
+                //    textBox1.Enabled = false;
+                //    textBox2.Enabled = false;
+                //    NewPictureBoxBox.Visible = true;
+                //    FullColorChkBox.Enabled = true;
+                //    SubPicBoxVisible(false);
+                //    textBox1.Text = "1";
+                //    textBox2.Text = "1.0";
+                //    mZO_Code = "NONE";
+                //    break;
+                //case 10:
+                //    groupBox1.Enabled = false;
+                //    groupBox2.Enabled = false;
+                //    mZoom_in_out_RadioChecked = true;
+                //    mFilter_RadioChecked = true;
+                //    textBox1.Enabled = false;
+                //    textBox2.Enabled = false;
+                //    NewPictureBoxBox.Visible = true;
+                //    FullColorChkBox.Enabled = true;
+                //    SubPicBoxVisible(false);
+                //    textBox1.Text = "1";
+                //    textBox2.Text = "1.0";
+                //    mZO_Code = "NONE";
+                //    break;
                 case 11:
                     groupBox1.Enabled = false;
+                    groupBox2.Enabled = true;
+                    mZoom_in_out_RadioChecked = true;
+                    mFilter_RadioChecked = false;
                     textBox1.Enabled = false;
                     textBox2.Enabled = false;
                     NewPictureBoxBox.Visible = true;
@@ -424,16 +461,21 @@ namespace Image_Zoom_in_out
                     SubPicBoxVisible(false);
                     textBox1.Text = "1";
                     textBox2.Text = "1.0";
-                    mZO_Code = "NONE";
+                    //mZO_Code = "NONE";
                     break;
                 default:
                     groupBox1.Enabled = false;
+                    groupBox2.Enabled = false;
+                    mZoom_in_out_RadioChecked = true;
+                    mFilter_RadioChecked = true;
                     textBox1.Enabled = false;
+                    textBox2.Enabled = false;
                     NewPictureBoxBox.Visible = true;
                     FullColorChkBox.Enabled = true;
                     SubPicBoxVisible(false);
-                    textBox1.Text = "";
-                    textBox2.Text = "";
+                    textBox1.Text = "1";
+                    textBox2.Text = "1.0";
+                    //mZO_Code = "NONE";
                     break;
             }
         }
@@ -441,6 +483,31 @@ namespace Image_Zoom_in_out
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             mFull_Color = !mFull_Color;
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            mZoom_in_out_RadioChecked = true;
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            mZoom_in_out_RadioChecked = true;
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            mFilter_RadioChecked = true;
+        }
+
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+            mFilter_RadioChecked = true;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            StatusLabel.Text = "待機狀態";
         }
         
 

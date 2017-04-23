@@ -41,11 +41,11 @@ namespace Image_Zoom_in_out
         {
             while (!_shouldStop)
             {
-                
+
                 for (int i = 0; i < 8; i++)
                 {
                     form1.mNoiseImageArray[i] = GenerateNoise(form1.BITMAP, i);
-                    
+
                 }
 
                 RequestStop();
@@ -60,7 +60,7 @@ namespace Image_Zoom_in_out
         {
             _shouldStop = true;
         }
-        
+
         private volatile bool _shouldStop;
 
         private Boolean ExcuteFunction(string ExcuteMode)
@@ -102,7 +102,7 @@ namespace Image_Zoom_in_out
                     break;
                 case "Averaging filter":
                     newImage = AveragingFilter(form1.mNoiseImageArray);
-                    form1.BITMAP = newImage ?? form1.BITMAP ;
+                    form1.BITMAP = newImage ?? form1.BITMAP;
                     break;
                 case "Median filter":
                     newImage = MedianFilter(oldImage);
@@ -116,7 +116,7 @@ namespace Image_Zoom_in_out
                     newImage = FourierTransformation(oldImage);
                     form1.BITMAP = newImage;
                     break;
-                    
+
 
 
             }
@@ -524,11 +524,11 @@ namespace Image_Zoom_in_out
          */
         public Bitmap AveragingFilter(Bitmap[] noiseImageArray)
         {
-            int[] p_array ;
+            int[] p_array;
             int proccess_image = 0;
 
             if (noiseImageArray.Length != 0)
-            {   
+            {
                 p_array = new int[noiseImageArray[0].Width * noiseImageArray[0].Height * 4];
 
                 foreach (Bitmap oldImage in noiseImageArray)
@@ -540,15 +540,15 @@ namespace Image_Zoom_in_out
                     {
                         for (int j = 0; j < oldImage.Height; j++)
                         {
-                           var p_Color_R = oldImage.GetPixel(i, j).R; 
-                           var p_Color_G = oldImage.GetPixel(i, j).G; 
-                           var p_Color_B = oldImage.GetPixel(i, j).B;
-                           var p_Color_Gray = (int)(oldImage.GetPixel(i, j).R * 0.299 + oldImage.GetPixel(i, j).G * 0.587 + oldImage.GetPixel(i, j).B * 0.114);
+                            var p_Color_R = oldImage.GetPixel(i, j).R;
+                            var p_Color_G = oldImage.GetPixel(i, j).G;
+                            var p_Color_B = oldImage.GetPixel(i, j).B;
+                            var p_Color_Gray = (int)(oldImage.GetPixel(i, j).R * 0.299 + oldImage.GetPixel(i, j).G * 0.587 + oldImage.GetPixel(i, j).B * 0.114);
 
-                           p_array[i * oldImage.Height + j] += p_Color_R;
-                           p_array[i * oldImage.Height + 1 * oldImage.Width * oldImage.Height + j] += p_Color_G;
-                           p_array[i * oldImage.Height + 2 * oldImage.Width * oldImage.Height + j] += p_Color_B;
-                           p_array[i * oldImage.Height + 3 * oldImage.Width * oldImage.Height + j] += p_Color_Gray;
+                            p_array[i * oldImage.Height + j] += p_Color_R;
+                            p_array[i * oldImage.Height + 1 * oldImage.Width * oldImage.Height + j] += p_Color_G;
+                            p_array[i * oldImage.Height + 2 * oldImage.Width * oldImage.Height + j] += p_Color_B;
+                            p_array[i * oldImage.Height + 3 * oldImage.Width * oldImage.Height + j] += p_Color_Gray;
 
                             if (proccess_image == noiseImageArray.Length)
                             {
@@ -576,7 +576,7 @@ namespace Image_Zoom_in_out
                 }
             }
 
-            
+
 
             return null;
 
@@ -587,7 +587,7 @@ namespace Image_Zoom_in_out
         /**
          * 模擬舊圖附加上椒鹽雜訊(例:Averaging filter 用)
          */
-        public Bitmap GenerateNoise(Bitmap oldImage,int weight)
+        public Bitmap GenerateNoise(Bitmap oldImage, int weight)
         {
             int image_Hight = oldImage.Height;
             int image_Width = oldImage.Width;
@@ -601,7 +601,7 @@ namespace Image_Zoom_in_out
             // 不然在這邊newImage.SetPixel時會爆掉，畢竟你企圖拿24位元色彩寫進8位元色彩的圖片像素上。
             Bitmap newImage = oldImage.Clone(new Rectangle(0, 0, oldImage.Width, oldImage.Height), PixelFormat.Format24bppRgb);
             Random r = new Random();
-            
+
             for (int i = 0; i < image_Width; i++)
             {
                 int j = 0;
@@ -623,12 +623,12 @@ namespace Image_Zoom_in_out
          */
         private Bitmap MedianFilter(Bitmap oldImage)
         {
-            
+
             Bitmap newImage = new Bitmap(oldImage.Width, oldImage.Height);
             Bitmap processImage = AddBorders(oldImage);
-            for (int i = 1; i < oldImage.Width+1; i++)
+            for (int i = 1; i < oldImage.Width + 1; i++)
             {
-                for (int j = 1; j < oldImage.Height+1; j++)
+                for (int j = 1; j < oldImage.Height + 1; j++)
                 {
                     /**
                      * 取九宮格色塊
@@ -676,7 +676,7 @@ namespace Image_Zoom_in_out
          */
         public Bitmap AddBorders(Bitmap oldBitmap)
         {
-            Bitmap newBitmap = new Bitmap(oldBitmap.Width+2,oldBitmap.Height+2);
+            Bitmap newBitmap = new Bitmap(oldBitmap.Width + 2, oldBitmap.Height + 2);
 
             for (int i = 0; i < oldBitmap.Width; i++)
             {
@@ -685,13 +685,13 @@ namespace Image_Zoom_in_out
                     if (i == 0 || i == oldBitmap.Width + 1 ||
                         j == 0 || j == oldBitmap.Height + 1)
                     {
-                        newBitmap.SetPixel(i, j, Color.FromArgb(255,255,255));
+                        newBitmap.SetPixel(i, j, Color.FromArgb(255, 255, 255));
                     }
                     else
                     {
-                        newBitmap.SetPixel(i+1, j+1, oldBitmap.GetPixel(i, j));
+                        newBitmap.SetPixel(i + 1, j + 1, oldBitmap.GetPixel(i, j));
                     }
-                    
+
                 }
             }
 
@@ -701,12 +701,12 @@ namespace Image_Zoom_in_out
         /**
          * Laplacian
          */
-        private Bitmap Laplacian(Bitmap oldImage,int[] maskArray = null)
+        private Bitmap Laplacian(Bitmap oldImage, int[] maskArray = null)
         {
             /*
              * 預設矩陣內容
              */
-            if (maskArray == null) maskArray = new int[9] {-1, -1, -1, -1, 9, -1, -1, -1, -1};
+            if (maskArray == null) maskArray = new int[9] { -1, -1, -1, -1, 9, -1, -1, -1, -1 };
 
             Bitmap newImage = new Bitmap(oldImage.Width, oldImage.Height);
             Bitmap processImage = AddBorders(oldImage);
@@ -747,8 +747,8 @@ namespace Image_Zoom_in_out
                      */
                     newImage.SetPixel(i - 1, j - 1,
                         form1.FULL_COLOR
-                            ? Color.FromArgb(p_Color_R, p_Color_G , p_Color_B )
-                            : Color.FromArgb(p_Color_Gray , p_Color_Gray , p_Color_Gray ));
+                            ? Color.FromArgb(p_Color_R, p_Color_G, p_Color_B)
+                            : Color.FromArgb(p_Color_Gray, p_Color_Gray, p_Color_Gray));
                 }
             }
 
@@ -758,61 +758,132 @@ namespace Image_Zoom_in_out
 
         /**
          * Fourier transformation
-         * AForge.NET
+         * 使用AForge.Net
+         * NuGet -> AForge.Imaging
          */
-        private Bitmap FourierTransformation(Bitmap oldImage, String PassType = "HighPass")
+        private Bitmap FourierTransformation(Bitmap oldImage)
         {
-            
-            //// create complex image
-            //ComplexImage complexImage = ComplexImage.FromBitmap(oldImage);
-            //// do forward Fourier transformation
-            //complexImage.ForwardFourierTransform();
-            //// create filter
-            //FrequencyFilter filter = new FrequencyFilter(new IntRange(0, 100));
-            //// apply filter
-            //filter.Apply(complexImage);
-            //// do backward Fourier transformation
-            //complexImage.BackwardFourierTransform();
-            //// get complex image as bitmat
-            //Bitmap fourierImage = complexImage.ToBitmap();
 
-            //return fourierImage;
+            ComplexImage cimage;
+            Bitmap pow2Bitmap, bitmap_8bbp, newBitmap;
+            // 創建高通濾波器，還不確定數字這樣設定對不對...
+            FrequencyFilter height_pass_filter = new FrequencyFilter(new IntRange(128, 256));
+            // 創建低通濾波器，同樣還不確定數字這樣設定對不對...
+            FrequencyFilter low_pass_filter = new FrequencyFilter(new IntRange(0, 128));
+            pow2Bitmap = EnlargeToPow2(oldImage); // 先取正方形圖片(2次方規格)
+            bitmap_8bbp = pow2Bitmap.Clone(new Rectangle(0, 0, pow2Bitmap.Width, pow2Bitmap.Height), PixelFormat.Format8bppIndexed); //確保有將圖片轉為8bpp
+            SetGrayscalePalette(bitmap_8bbp); // 轉灰階
 
-            AForge.Imaging.ComplexImage cimage;
-            switch (PassType)
+            /*
+             * 以下為AForge.Net函式應用方法我還不太懂..
+             */
+            // create complex image from bitmap
+            cimage = ComplexImage.FromBitmap(bitmap_8bbp);
+            // 做傅立葉轉換
+            // 原文:perform forward Fourier transformation
+            cimage.ForwardFourierTransform();
+
+            //這時候呈現出來的圖片會是黑白很漂亮的十字架(通常是十字架)
+            //尚未過濾波器
+            //newBitmap = cimage.ToBitmap();
+
+            switch (form1.FILTER_CODE)
             {
                 case "HighPass":
-
-                    //AForge.Imaging.Image.SetGrayscalePalette(AForge.Imaging.Image.Convert16bppTo8bpp(oldImage));
-                    if (AForge.Imaging.Image.IsGrayscale(oldImage))
-                    {
-                        // create complex image from bitmap
-                        cimage = ComplexImage.FromBitmap(oldImage);
-                        // perform forward Fourier transformation
-                        cimage.ForwardFourierTransform();
-                        // get frequency view
-                        Bitmap newBitmap = cimage.ToBitmap();
-
-                        return newBitmap;
-                    }
-                    return null;
+                    // 過高通濾波器
+                    height_pass_filter.Apply(cimage);
+                    break;
                 case "LowPass":
-                    // create complex image
-                    ComplexImage complexImage = ComplexImage.FromBitmap(oldImage);
-                    // do forward Fourier transformation
-                    complexImage.ForwardFourierTransform();
-                    // create filter
-                    FrequencyFilter filter = new FrequencyFilter(new IntRange(0, 100));
-                    // apply filter
-                    filter.Apply(complexImage);
-                    // do backward Fourier transformation
-                    complexImage.BackwardFourierTransform();
-                    // get complex image as bitmat
-                    Bitmap fourierImage = complexImage.ToBitmap();
-
-                    return fourierImage;
+                    // 過低通濾波器
+                    low_pass_filter.Apply(cimage);
+                    break;
             }
-            return null;
+
+            // 猜測:做傅立葉反轉換回來
+            cimage.BackwardFourierTransform();
+            // 轉成點陣圖呈現
+            //newBitmap = cimage.ToBitmap();
+            newBitmap = BimapExtract(cimage.ToBitmap(), oldImage.Width, oldImage.Height);
+            return newBitmap;
+        }
+
+        /*
+         * 將8bpp圖片轉換為灰階
+         * 直接用AForge.Net的內建dll方法有點問題
+         * 推測是出在我的電腦調色盤只轉換出224種顏色
+         * 8bit應該要256色，所以我弄了一個靈活點的方法來轉換
+         */
+        private static void SetGrayscalePalette(Bitmap oldBitmap)
+        {
+            if (oldBitmap.PixelFormat != PixelFormat.Format8bppIndexed)
+                throw new ArgumentException();
+            ColorPalette cp = oldBitmap.Palette;
+            for (int i = 0; i < oldBitmap.Palette.Entries.Length; i++)
+            {
+                cp.Entries[i] = Color.FromArgb(i, i, i);
+            }
+            oldBitmap.Palette = cp;
+        }
+
+        /*
+         * 將圖片放大到最小能放大的正方形圖片大小(2次方)
+         */
+        private Bitmap EnlargeToPow2(Bitmap oldBitmap)
+        {
+            var width = oldBitmap.Width;
+            var height = oldBitmap.Height;
+            var pow = 0;
+            if (Math.Log(width, 2) != Math.Log(height, 2))
+            {
+                pow = Math.Log(width, 2) > Math.Log(height, 2)
+                    ? (int)Math.Log(width, 2) + 1
+                    : (int)Math.Log(height, 2) + 1;
+
+            }
+            else
+            {
+                pow = (int)Math.Log(height, 2) + 1;
+            }
+
+            //生成放大的新圖
+            Bitmap newBitmap = new Bitmap((int)Math.Pow(2, pow), (int)Math.Pow(2, pow));
+
+            //先把舊圖放上去
+            for (int i = 0; i < oldBitmap.Width; i++)
+            {
+                for (int j = 0; j < oldBitmap.Height; j++)
+                {
+                    newBitmap.SetPixel(i, j, oldBitmap.GetPixel(i, j));
+                }
+            }
+
+            //放大部分補黑底
+            for (int i = oldBitmap.Width; i < newBitmap.Width; i++)
+            {
+                for (int j = oldBitmap.Height; j < newBitmap.Height; j++)
+                {
+                    newBitmap.SetPixel(i, j, Color.Black);
+                }
+            }
+
+            return newBitmap;
+
+        }
+
+        /*
+         * 擷取指定範圍的圖像
+         */
+        private Bitmap BimapExtract(Bitmap oldBitmap,int width,int height)
+        {
+            Bitmap newBitmap = new Bitmap(width,height);
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    newBitmap.SetPixel(i, j, oldBitmap.GetPixel(i, j));
+                }
+            }
+            return newBitmap;
         }
 
     }
