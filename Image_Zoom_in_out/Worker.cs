@@ -63,7 +63,7 @@ namespace Image_Zoom_in_out
 
         private volatile bool _shouldStop;
 
-        private Boolean ExcuteFunction(string ExcuteMode)
+        private bool ExcuteFunction(string ExcuteMode)
         {
             Bitmap oldImage = form1.BITMAP;
             Bitmap newImage;
@@ -609,7 +609,7 @@ namespace Image_Zoom_in_out
                 {
                     int ratio = r.Next(0, image_Hight);
                     j += ratio / (weight + 1); // 整個方法呼叫越多次(產生越多圖)，可以透過迭代增加weight值創造出每張圖片雜訊密度漸增的目的。
-                    int num = r.Next(0, 256);
+                    int num = r.Next(0, 2) * 255;
                     newImage.SetPixel(i, j % image_Hight, Color.FromArgb(255, num, num, num));
                     j++;
                 }
@@ -767,7 +767,7 @@ namespace Image_Zoom_in_out
             ComplexImage cimage;
             Bitmap pow2Bitmap, bitmap_8bbp, newBitmap;
             // 創建高通濾波器，還不確定數字這樣設定對不對...
-            FrequencyFilter height_pass_filter = new FrequencyFilter(new IntRange(128, 256));
+            FrequencyFilter height_pass_filter = new FrequencyFilter(new IntRange(64,256));
             // 創建低通濾波器，同樣還不確定數字這樣設定對不對...
             FrequencyFilter low_pass_filter = new FrequencyFilter(new IntRange(0, 128));
             pow2Bitmap = EnlargeToPow2(oldImage); // 先取正方形圖片(2次方規格)
@@ -785,7 +785,7 @@ namespace Image_Zoom_in_out
 
             //這時候呈現出來的圖片會是黑白很漂亮的十字架(通常是十字架)
             //尚未過濾波器
-            //newBitmap = cimage.ToBitmap();
+            newBitmap = cimage.ToBitmap();
 
             switch (form1.FILTER_CODE)
             {
@@ -798,12 +798,12 @@ namespace Image_Zoom_in_out
                     low_pass_filter.Apply(cimage);
                     break;
             }
-
+            //newBitmap = cimage.ToBitmap();
             // 猜測:做傅立葉反轉換回來
-            cimage.BackwardFourierTransform();
+            //cimage.BackwardFourierTransform();
             // 轉成點陣圖呈現
             //newBitmap = cimage.ToBitmap();
-            newBitmap = BimapExtract(cimage.ToBitmap(), oldImage.Width, oldImage.Height);
+            //newBitmap = BimapExtract(cimage.ToBitmap(), oldImage.Width, oldImage.Height);
             return newBitmap;
         }
 
