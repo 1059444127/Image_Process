@@ -1,5 +1,7 @@
 # Image_Process
 影像處理
+# Fourier transform
+This function is partially implemented AForge.NET :: Framework.
 # BSD License
 <p>Copyright (c) 2017, TWKiwi team</p>
 <p>All rights reserved.</p>
