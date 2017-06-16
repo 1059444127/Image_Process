@@ -8,6 +8,7 @@ using System.Threading;
 using AForge;
 using AForge.Imaging;
 using AForge.Imaging.ComplexFilters;
+using AForge.Imaging.Filters;
 
 namespace Image_Zoom_in_out
 {
@@ -117,7 +118,10 @@ namespace Image_Zoom_in_out
                     form1.BITMAP = newImage;
                     break;
 
-
+                case "Thyroid Segmentation":
+                    newImage = Thyroid_Segmentation(oldImage);
+                    form1.BITMAP = newImage;
+                    break;
 
             }
 
@@ -625,7 +629,7 @@ namespace Image_Zoom_in_out
         {
 
             Bitmap newImage = new Bitmap(oldImage.Width, oldImage.Height);
-            Bitmap processImage = AddBorders(oldImage);
+            Bitmap processImage = AddBorders(oldImage, true);
             for (int i = 1; i < oldImage.Width + 1; i++)
             {
                 for (int j = 1; j < oldImage.Height + 1; j++)
@@ -674,7 +678,7 @@ namespace Image_Zoom_in_out
         /**
          * Median filter 用加白框(因為遮罩3*3框框讀到最邊邊色素塊會沒法好好讀)
          */
-        public Bitmap AddBorders(Bitmap oldBitmap)
+        public Bitmap AddBorders(Bitmap oldBitmap, Boolean mode)
         {
             Bitmap newBitmap = new Bitmap(oldBitmap.Width + 2, oldBitmap.Height + 2);
 
@@ -685,7 +689,8 @@ namespace Image_Zoom_in_out
                     if (i == 0 || i == oldBitmap.Width + 1 ||
                         j == 0 || j == oldBitmap.Height + 1)
                     {
-                        newBitmap.SetPixel(i, j, Color.FromArgb(255, 255, 255));
+                        if (mode) newBitmap.SetPixel(i, j, Color.FromArgb(255, 255, 255));
+                        else newBitmap.SetPixel(i, j, Color.FromArgb(0, 0, 0));
                     }
                     else
                     {
@@ -709,7 +714,7 @@ namespace Image_Zoom_in_out
             if (maskArray == null) maskArray = new int[9] { -1, -1, -1, -1, 9, -1, -1, -1, -1 };
 
             Bitmap newImage = new Bitmap(oldImage.Width, oldImage.Height);
-            Bitmap processImage = AddBorders(oldImage);
+            Bitmap processImage = AddBorders(oldImage, true);
             for (int i = 1; i < oldImage.Width + 1; i++)
             {
                 for (int j = 1; j < oldImage.Height + 1; j++)
@@ -767,9 +772,9 @@ namespace Image_Zoom_in_out
             ComplexImage cimage;
             Bitmap pow2Bitmap, bitmap_8bbp, newBitmap;
             // 創建高通濾波器，還不確定數字這樣設定對不對...
-            FrequencyFilter height_pass_filter = new FrequencyFilter(new IntRange(64,256));
+            FrequencyFilter height_pass_filter = new FrequencyFilter(new IntRange(64, 256));
             // 創建低通濾波器，同樣還不確定數字這樣設定對不對...
-            FrequencyFilter low_pass_filter = new FrequencyFilter(new IntRange(0, 128));
+            FrequencyFilter low_pass_filter = new FrequencyFilter(new IntRange(0, 64));
             pow2Bitmap = EnlargeToPow2(oldImage); // 先取正方形圖片(2次方規格)
             bitmap_8bbp = pow2Bitmap.Clone(new Rectangle(0, 0, pow2Bitmap.Width, pow2Bitmap.Height), PixelFormat.Format8bppIndexed); //確保有將圖片轉為8bpp
             SetGrayscalePalette(bitmap_8bbp); // 轉灰階
@@ -800,10 +805,10 @@ namespace Image_Zoom_in_out
             }
             //newBitmap = cimage.ToBitmap();
             // 猜測:做傅立葉反轉換回來
-            //cimage.BackwardFourierTransform();
+            cimage.BackwardFourierTransform();
             // 轉成點陣圖呈現
-            //newBitmap = cimage.ToBitmap();
-            //newBitmap = BimapExtract(cimage.ToBitmap(), oldImage.Width, oldImage.Height);
+            newBitmap = cimage.ToBitmap();
+            newBitmap = BimapExtract(cimage.ToBitmap(), oldImage.Width, oldImage.Height);
             return newBitmap;
         }
 
@@ -873,9 +878,9 @@ namespace Image_Zoom_in_out
         /*
          * 擷取指定範圍的圖像
          */
-        private Bitmap BimapExtract(Bitmap oldBitmap,int width,int height)
+        private Bitmap BimapExtract(Bitmap oldBitmap, int width, int height)
         {
-            Bitmap newBitmap = new Bitmap(width,height);
+            Bitmap newBitmap = new Bitmap(width, height);
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
@@ -884,6 +889,402 @@ namespace Image_Zoom_in_out
                 }
             }
             return newBitmap;
+        }
+
+
+        /*
+         * Final Project 
+         */
+        private Bitmap Thyroid_Segmentation(Bitmap oldBitmap)
+        {
+            double[] EGL = GetEveragePerRowGrayLevel(oldBitmap);
+            int R1 = findMaxGLIndex(EGL);
+            int R2 = findMinGLIndex(EGL, R1);
+            Bitmap IntensityBtm = IntensityBtmGetter(oldBitmap, R1, R2);//擷取R1,R2切塊圖
+            Bitmap MF_IntensityBtm = IntensityBtm.Clone(new Rectangle(0, 0, IntensityBtm.Width, IntensityBtm.Height), PixelFormat.Format24bppRgb);
+            for (int i = 0; i < 25; i++)
+            {
+                MF_IntensityBtm = MedianFilter(MF_IntensityBtm);
+            }
+            for (int j = 0; j < 4; j++)
+            {
+                MF_IntensityBtm = Dilate(MF_IntensityBtm);
+            }
+            //Bitmap MF_IntensityBtm = Dilate(Dilate(MedianFilter(MedianFilter(MedianFilter(MedianFilter(MedianFilter(MedianFilter(IntensityBtm))))))));//膨脹
+            Bitmap MF_GLC_IntensityBtm = GLCompensation(MF_IntensityBtm);//根據甲狀腺區域的強度模板補償不同的圖像
+            //Bitmap AOP_MF_GLC_IntensityBtm = CutofGLImage(AndOperatorPic(MF_IntensityBtm, MF_GLC_IntensityBtm, 128 - getGLT(oldBitmap), 0), 0, 32);//128 - getGLT(oldBitmap)參數待調整
+            Bitmap AOP_MF_GLC_IntensityBtm = CutofGLImage(MF_GLC_IntensityBtm, 32, 64);//128 - getGLT(oldBitmap)參數待調整
+            Bitmap Border_AOP_MF_GLC_IntensityBtm = DrawOutLined(MF_GLC_IntensityBtm, AddBorders(MF_GLC_IntensityBtm, false));
+
+
+            return AddOutLined(oldBitmap, Border_AOP_MF_GLC_IntensityBtm, R1);
+            //return Border_AOP_MF_GLC_IntensityBtm;
+        }
+
+        /*
+         * 取得每列灰階均值
+         */
+        private double[] GetEveragePerRowGrayLevel(Bitmap oldBitmap)
+        {
+            double[] EGL = new double[oldBitmap.Height];
+            for (int j = 0; j < oldBitmap.Height; j++)
+            {
+                double sum = 0;
+                for (int i = 0; i < oldBitmap.Width; i++)
+                {
+                    Color pColor = oldBitmap.GetPixel(i, j);
+
+                    int gColor = (int)(0.299 * pColor.R + 0.587 * pColor.G + 0.114 * pColor.B);
+                    sum += gColor;
+                }
+                EGL[j] = sum / oldBitmap.Width;
+            }
+
+
+            return EGL;
+        }
+        /*
+         * 取得最大灰階值列Id
+         */
+        private int findMaxGLIndex(double[] EGL)
+        {
+            int index = -1;
+            int count = 0;
+            double MAX_GL = -1.0;
+            foreach (double item in EGL)
+            {
+                if (item > MAX_GL)
+                {
+                    index = count;
+                    MAX_GL = item;
+                }
+                count++;
+            }
+            return index;
+        }
+        /*
+         * 取得最小灰階值列Id
+         */
+        private int findMinGLIndex(double[] EGL, int Max_Index)
+        {
+            int index = -1;
+            int count = 0;
+            double threshold = 0.0;
+            while (index == -1)
+            {
+                count = 0;
+                foreach (double item in EGL)
+                {
+                    if (item <= threshold && count > Max_Index)
+                    {
+                        index = count;
+                        break;
+                    }
+                    count++;
+                }
+                if (index == -1) threshold += 10;
+            }
+
+
+            return index;
+        }
+
+        /*
+         * 擷取R1,R2切塊圖 
+         */
+        private Bitmap IntensityBtmGetter(Bitmap oldBitmap, int R1, int R2)
+        {
+            Bitmap newBitmap = new Bitmap(oldBitmap.Width, R2 - R1 - 1);
+            for (int i = 0; i < oldBitmap.Width; i++)
+            {
+                int h_index = 0;
+                for (int j = 0; j < oldBitmap.Height; j++)
+                {
+                    if (j > R1 && j < R2)
+                    {
+                        newBitmap.SetPixel(i, h_index, oldBitmap.GetPixel(i, j));
+                        h_index++;
+                    }
+
+                }
+            }
+            return newBitmap;
+        }
+
+        /*
+         * 根據甲狀腺區域的強度模板補償不同的圖像
+         */
+        private Bitmap GLCompensation(Bitmap oldBitmap)
+        {
+            Bitmap newImage = new Bitmap(oldBitmap.Width, oldBitmap.Height);
+            int GLN = 128;
+            int GLT = getGLT(oldBitmap);
+
+            int GLD = GLN - GLT;
+            for (int i = 0; i < oldBitmap.Width; i++)
+            {
+                for (int j = 0; j < oldBitmap.Height; j++)
+                {
+                    Color pColor = oldBitmap.GetPixel(i, j);
+
+                    int gColor = (int)(0.299 * pColor.R + 0.587 * pColor.G + 0.114 * pColor.B);
+                    if (gColor - GLD > 255) gColor = 255;
+                    else if (gColor - GLD < 0) gColor = 0;
+                    else gColor -= GLD;
+
+                    newImage.SetPixel(i, j, Color.FromArgb(gColor, gColor, gColor));
+
+                }
+            }
+            return newImage;
+        }
+
+        /*
+         * 取得整張圖n*n個色素前20%高的平均數值
+         */
+        private int getGLT(Bitmap oldBitmap)
+        {
+            int GLT = 0;
+            int[] p_oldBitmap_Arr = new int[oldBitmap.Width * oldBitmap.Height];
+            for (int i = 0; i < oldBitmap.Width; i++)
+            {
+                for (int j = 0; j < oldBitmap.Height; j++)
+                {
+                    Color pColor = oldBitmap.GetPixel(i, j);
+
+                    int gColor = (int)(0.299 * pColor.R + 0.587 * pColor.G + 0.114 * pColor.B);
+                    p_oldBitmap_Arr[j * oldBitmap.Width + i] = gColor;
+
+                }
+            }
+
+            Array.Sort(p_oldBitmap_Arr);
+            for (int i = (int)(p_oldBitmap_Arr.Length * 0.8); i < p_oldBitmap_Arr.Length; i++)
+            {
+                GLT += (int)p_oldBitmap_Arr[i];
+            }
+            GLT /= (int)(p_oldBitmap_Arr.Length * 0.2);
+            return GLT;
+        }
+
+        /*
+         * 新舊圖做And
+         * mode 0 -> 除去
+         * mode 1 -> 保留
+         */
+        private Bitmap AndOperatorPic(Bitmap Bitmap1, Bitmap Bitmap2, int err, int mode)
+        {
+            Bitmap newBitmap = new Bitmap(Bitmap1.Width, Bitmap1.Height);
+            for (int i = 0; i < Bitmap1.Width; i++)
+            {
+                for (int j = 0; j < Bitmap1.Height; j++)
+                {
+                    if (Math.Abs(Bitmap1.GetPixel(i, j).R - Bitmap2.GetPixel(i, j).R) < err)
+                    {
+                        Color pColor = Bitmap2.GetPixel(i, j);
+                        int gColor = (int)(0.299 * pColor.R + 0.587 * pColor.G + 0.114 * pColor.B);
+                        newBitmap.SetPixel(i, j, Color.FromArgb(gColor * mode, gColor * mode, gColor * mode));
+                    }
+                    else
+                    {
+                        newBitmap.SetPixel(i, j, Bitmap2.GetPixel(i, j));
+                    }
+                }
+            }
+            return newBitmap;
+        }
+
+        /*
+         * 畫邊線
+         */
+        private Bitmap DrawOutLined(Bitmap oldBitmap, Bitmap processImage)
+        {
+
+            int[] GL = new int[oldBitmap.Width];
+
+            for (int k = 0; k < oldBitmap.Width; k++)
+            {
+                Color pColor = oldBitmap.GetPixel(k, 0);
+
+                int gColor = (int)(0.299 * pColor.R + 0.587 * pColor.G + 0.114 * pColor.B);
+                GL[k] = gColor;
+            }
+            Array.Sort(GL);
+            int GL_value = GL[0];
+
+
+            for (int i = 1; i < processImage.Width - 1; i++)
+            {
+                int Max_X = oldBitmap.Width;//圖片座標初始點在左上，所以這變數要比小
+                int Min_X = 0;//比大
+                for (int j = 1; j < processImage.Height - 1; j++)
+                {
+                    /*
+                    * 取九宮格色塊
+                    */
+                    Color[] color_arr = new Color[8];
+                    color_arr[0] = processImage.GetPixel(i - 1, j - 1);//左上
+                    color_arr[1] = processImage.GetPixel(i - 1, j);//上
+                    color_arr[2] = processImage.GetPixel(i - 1, j + 1);//右上
+                    color_arr[3] = processImage.GetPixel(i, j - 1);//左
+                    Color center_color = processImage.GetPixel(i, j);//中
+                    color_arr[4] = processImage.GetPixel(i, j + 1);//右
+                    color_arr[5] = processImage.GetPixel(i + 1, j - 1);//左下
+                    color_arr[6] = processImage.GetPixel(i + 1, j);//下
+                    color_arr[7] = processImage.GetPixel(i + 1, j + 1);//右下
+                    //int count = 0;
+                    //foreach (Color color in color_arr)
+                    //{
+                    //    int p_Color_Gray = (int)(color.R * 0.299 + color.G * 0.587 + color.B * 0.114);
+                    //    int p_center_Color_Gray = (int)(center_color.R * 0.299 + center_color.G * 0.587 + center_color.B * 0.114);
+                    //    if (p_Color_Gray < 24) count++;//符合條件的算入，作為邊界識別
+                    //}
+                    //if (count >=3 && count <= 5)
+                    //{
+                    //    oldBitmap.SetPixel(i - 1, j - 1, Color.FromArgb(49, 255, 0));//49, 255, 0
+                    //}
+
+
+
+
+
+
+
+                    if (color_arr[0].R == color_arr[1].R && color_arr[1].R == color_arr[2].R && color_arr[2].R != center_color.R)
+                    {
+                        if (j > Min_X && center_color.R == 0)
+                        {
+                            oldBitmap.SetPixel(i - 1, j - 1, Color.FromArgb(49, 255, 0));//49, 255, 0
+                            Min_X = j;
+                        }
+                        else if (j < Max_X && center_color.R == GL_value)
+                        {
+                            oldBitmap.SetPixel(i - 1, j - 1, Color.FromArgb(49, 255, 0));//49, 255, 0
+                            Max_X = j;
+                        }
+                    }
+                    if (color_arr[0].R == color_arr[3].R && color_arr[3].R == color_arr[5].R && color_arr[5].R != center_color.R)
+                    {
+                        if (j > Min_X && center_color.R == 0)
+                        {
+                            oldBitmap.SetPixel(i - 1, j - 1, Color.FromArgb(49, 255, 0));//49, 255, 0
+                            Min_X = j;
+                        }
+                        else if (j < Max_X && center_color.R == GL_value)
+                        {
+                            oldBitmap.SetPixel(i - 1, j - 1, Color.FromArgb(49, 255, 0));//49, 255, 0
+                            Max_X = j;
+                        }
+                    }
+                    if (color_arr[5].R == color_arr[6].R && color_arr[6].R == color_arr[7].R && color_arr[7].R != center_color.R)
+                    {
+                        if (j > Min_X && center_color.R == 0)
+                        {
+                            oldBitmap.SetPixel(i - 1, j - 1, Color.FromArgb(49, 255, 0));//49, 255, 0
+                            Min_X = j;
+                        }
+                        else if (j < Max_X && center_color.R == GL_value)
+                        {
+                            oldBitmap.SetPixel(i - 1, j - 1, Color.FromArgb(49, 255, 0));//49, 255, 0
+                            Max_X = j;
+                        }
+                    }
+                    if (color_arr[2].R == color_arr[4].R && color_arr[4].R == color_arr[7].R && color_arr[7].R != center_color.R)
+                    {
+                        if (j > Min_X && center_color.R == 0)
+                        {
+                            oldBitmap.SetPixel(i - 1, j - 1, Color.FromArgb(49, 255, 0));//49, 255, 0
+                            Min_X = j;
+                        }
+                        else if (j < Max_X && center_color.R == GL_value)
+                        {
+                            oldBitmap.SetPixel(i - 1, j - 1, Color.FromArgb(49, 255, 0));//49, 255, 0
+                            Max_X = j;
+                        }
+                    }
+
+                }
+            }
+
+            return oldBitmap;
+        }
+
+        /*
+         * 侵蝕
+         */
+        private Bitmap Erosion(Bitmap oldBitmap)
+        {
+            Bitmap bitmap = oldBitmap.Clone(new Rectangle(0, 0, oldBitmap.Width, oldBitmap.Height), PixelFormat.Format8bppIndexed); //確保有將圖片轉為8bpp
+            // create filter
+            Erosion filter = new Erosion();
+            // apply the filter
+            filter.ApplyInPlace(bitmap);
+            Bitmap newImage = bitmap.Clone(new Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format24bppRgb);
+            return newImage;
+        }
+
+        /*
+         * 膨脹
+         */
+        private Bitmap Dilate(Bitmap oldBitmap)
+        {
+            Bitmap bitmap = oldBitmap.Clone(new Rectangle(0, 0, oldBitmap.Width, oldBitmap.Height), PixelFormat.Format8bppIndexed); //確保有將圖片轉為8bpp
+            // create filter
+            Dilatation filter = new Dilatation();
+            // apply the filter
+            filter.ApplyInPlace(bitmap);
+            Bitmap newImage = bitmap.Clone(new Rectangle(0, 0, bitmap.Width, bitmap.Height), PixelFormat.Format24bppRgb);
+            return newImage;
+        }
+
+        /*
+         * 裁減指定色素範圍內的圖像出來
+         */
+        private Bitmap CutofGLImage(Bitmap oldBitmap, int range_start, int range_end)
+        {
+            Bitmap newBitmap = new Bitmap(oldBitmap.Width, oldBitmap.Height);
+            for (int i = 0; i < oldBitmap.Width; i++)
+            {
+                for (int j = 0; j < oldBitmap.Height; j++)
+                {
+                    Color pColor = oldBitmap.GetPixel(i, j);
+                    int gColor = (int)(0.299 * pColor.R + 0.587 * pColor.G + 0.114 * pColor.B);
+                    if (gColor >= range_start && gColor <= range_end)
+                    {
+                        newBitmap.SetPixel(i, j, Color.FromArgb(gColor, gColor, gColor));
+                    }
+                    else
+                    {
+                        newBitmap.SetPixel(i, j, Color.FromArgb(0, 0, 0));
+                    }
+                }
+            }
+            return newBitmap;
+        }
+
+
+        /*
+         * 把邊框加回去原本的圖上
+         */
+        private Bitmap AddOutLined(Bitmap oldBitmap, Bitmap OutLinedBitmap, int R1)
+        {
+            Bitmap newImage = oldBitmap.Clone(new Rectangle(0, 0, oldBitmap.Width, oldBitmap.Height), PixelFormat.Format24bppRgb);
+            for (int i = 0; i < OutLinedBitmap.Width; i++)
+            {
+                for (int j = 0; j < OutLinedBitmap.Height; j++)
+                {
+                    Color pColor = OutLinedBitmap.GetPixel(i, j);
+                    if (pColor.R == 49 && pColor.G == 255 && pColor.B == 0)
+                    {
+                        newImage.SetPixel(i, j + R1, Color.FromArgb(49, 255, 0));
+                    }
+                    else
+                    {
+                        newImage.SetPixel(i, j + R1, oldBitmap.GetPixel(i, j + R1));
+                    }
+                }
+            }
+            return newImage;
         }
 
     }

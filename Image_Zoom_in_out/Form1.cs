@@ -56,7 +56,7 @@ namespace Image_Zoom_in_out
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.InitialDirectory = "c:\\";
-            openFileDialog1.Filter = "jpg files (*.jpg)|*.jpg|png files (*.png)|*.png";
+            openFileDialog1.Filter = "jpg files (*.jpg)|*.jpg|png files (*.png)|*.png|bmp files (*.bmp)|*.bmp";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = false;
 
@@ -73,7 +73,7 @@ namespace Image_Zoom_in_out
                     pictureBox2.Image = mBitmap;
                     label2.Text = file.Split('\\')[file.Split('\\').Length - 1];
                     PixelLabel.Text = mBitmap.Width + "x" + mBitmap.Height + "Pixel.";
-                    OriginalPixelLabel.Text = "原圖 : "+ mBitmap.Width + "x" + mBitmap.Height + "Pixel.";
+                    OriginalPixelLabel.Text = "原圖 : " + mBitmap.Width + "x" + mBitmap.Height + "Pixel.";
                     mPic_Path = file;
 
 
@@ -112,7 +112,7 @@ namespace Image_Zoom_in_out
             }
             NewPictureBoxBox.Image = BITMAP;
 
-            
+
 
         }
 
@@ -157,10 +157,12 @@ namespace Image_Zoom_in_out
                         if (radioButton3.Checked)
                         {
                             mFilter_Code = "HighPass";
+                            mFilter_RadioChecked = true;
                         }
                         else if (radioButton4.Checked)
                         {
                             mFilter_Code = "LowPass";
+                            mFilter_RadioChecked = true;
                         }
 
                         // 即使模式不提供放大縮小和高低通也要將狀態設定為isChecked
@@ -238,7 +240,7 @@ namespace Image_Zoom_in_out
 
         }
 
-        
+
 
         public Button InputImageButton { get { return button1; } }
         public Button ExcuteButton { get { return button2; } }
@@ -268,7 +270,7 @@ namespace Image_Zoom_in_out
         public String FILTER_CODE { get { return mFilter_Code; } }
         public int MUTIPLE { get { return mMutiple; } }
         public double GAMMA { get { return mGamma; } }
-        public Boolean FULL_COLOR { get { return mFull_Color; }}
+        public Boolean FULL_COLOR { get { return mFull_Color; } }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -284,10 +286,11 @@ namespace Image_Zoom_in_out
                 9.      Median filter
                10.      Laplacian
                11.      Fourier Transformation
+               12.      Thyroid Segmentation
              */
             switch (index)
             {
-                case 0 :
+                case 0:
                     groupBox1.Enabled = true;
                     groupBox2.Enabled = false;
                     mZoom_in_out_RadioChecked = false;
@@ -463,6 +466,20 @@ namespace Image_Zoom_in_out
                     textBox2.Text = "1.0";
                     //mZO_Code = "NONE";
                     break;
+                case 12:
+                    groupBox1.Enabled = false;
+                    groupBox2.Enabled = true;
+                    mZoom_in_out_RadioChecked = true;
+                    mFilter_RadioChecked = false;
+                    textBox1.Enabled = false;
+                    textBox2.Enabled = false;
+                    NewPictureBoxBox.Visible = true;
+                    FullColorChkBox.Enabled = true;
+                    SubPicBoxVisible(false);
+                    textBox1.Text = "1";
+                    textBox2.Text = "1.0";
+                    //mZO_Code = "NONE";
+                    break;
                 default:
                     groupBox1.Enabled = false;
                     groupBox2.Enabled = false;
@@ -509,7 +526,7 @@ namespace Image_Zoom_in_out
         {
             StatusLabel.Text = "待機狀態";
         }
-        
+
 
     }
 }
